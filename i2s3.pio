@@ -1,0 +1,22 @@
+; I2S master output, 32-bit slots, 2 PIO cycles per bit.
+; Chay 3 SM cung chuong trinh nay, moi SM mot chan DATA, dung chung BCLK/LRCLK.
+; side-set: bit0 = BCLK, bit1 = LRCLK (0 = Left, 1 = Right)
+; PIO clock = fs * 64 bit * 2 = fs * 128  (48 kHz -> 6.144 MHz)
+; Moi frame = 2 tu 32-bit tu FIFO: Left roi Right (MSB first).
+
+.program i2s3_out
+.side_set 2
+
+.wrap_target
+bitloop0:                       ; Left, LRCLK = 0
+    out pins, 1       side 0b00
+    jmp x-- bitloop0  side 0b01
+    out pins, 1       side 0b10 ; bit cuoi cua Left, LRCLK len 1 (truoc MSB Right 1 BCLK)
+    set x, 30         side 0b11
+bitloop1:                       ; Right, LRCLK = 1
+    out pins, 1       side 0b10
+    jmp x-- bitloop1  side 0b11
+    out pins, 1       side 0b00 ; bit cuoi cua Right, LRCLK xuong 0
+public entry_point:
+    set x, 30         side 0b01
+.wrap
