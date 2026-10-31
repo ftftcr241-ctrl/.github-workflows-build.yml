@@ -45,7 +45,7 @@ uint8_t const *tud_descriptor_device_cb(void) {
         /*_termtype*/ AUDIO_TERM_TYPE_USB_STREAMING, /*_assocTerm*/ 0x00, \
         /*_clkid*/ UAC2_ENTITY_CLOCK, /*_nchannelslogical*/ 0x02, \
         /*_channelcfg*/ AUDIO_CHANNEL_CONFIG_NON_PREDEFINED, /*_idxchannelnames*/ 0x00, \
-        /*_ctrl*/ 0 * (AUDIO_CTRL_R << AUDIO_IN_TERM_CTRL_POS_COPY_PROT), /*_stridx*/ 0x00), \
+        /*_ctrl*/ 0x0000, /*_stridx*/ 0x00), \
     /* Feature unit: chỉ master mute + volume */ \
     TUD_AUDIO_DESC_FEATURE_UNIT_TWO_CHANNEL(/*_unitid*/ UAC2_ENTITY_FEATURE_UNIT, \
         /*_srcid*/ UAC2_ENTITY_INPUT_TERMINAL, \
