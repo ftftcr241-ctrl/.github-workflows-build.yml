@@ -1,25 +1,35 @@
 name: Build firmware
+
 on:
   push:
+  pull_request:
   workflow_dispatch:
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential python3
+          sudo apt-get install -y cmake ninja-build build-essential gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
+
       - name: Get Pico SDK 2.1.1
         run: |
-          git clone --depth 1 --branch 2.1.1 https://github.com/raspberrypi/pico-sdk.git $HOME/pico-sdk
-          git -C $HOME/pico-sdk submodule update --init --depth 1 lib/tinyusb
-            - name: Build
+          git clone --depth 1 --branch 2.1.1 --recurse-submodules --shallow-submodules https://github.com/raspberrypi/pico-sdk.git "$HOME/pico-sdk"
+
+      - name: Build
         run: |
-          cmake -S . -B build -G Ninja -DPICO_BOARD=pico2 ...giữ nguyên phần còn lại của dòng 20...
+          cmake -S . -B build -G Ninja -DPICO_SDK_PATH="$HOME/pico-sdk" -DPICO_BOARD=pico2
           cmake --build build
-      - name: Lưu file UF2
+
+      - name: List output files
+        run: find build -maxdepth 2 -name "*.uf2"
+
+      - name: Upload UF2
         uses: actions/upload-artifact@v4
         with:
           name: firmware-uf2
